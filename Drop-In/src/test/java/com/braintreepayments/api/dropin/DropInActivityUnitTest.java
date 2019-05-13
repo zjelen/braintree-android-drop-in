@@ -496,6 +496,23 @@ public class DropInActivityUnitTest {
     }
 
     @Test
+    public void selectingAVaultedPaymentMethod_sendsAnalyticEvent() throws JSONException {
+        setup(mock(BraintreeFragment.class));
+
+        List<PaymentMethodNonce> nonceList = new ArrayList<>();
+        nonceList.add(mock(CardNonce.class));
+
+        mActivity.onPaymentMethodNoncesUpdated(nonceList);
+
+        RecyclerView recyclerView = mActivity.findViewById(R.id.bt_vaulted_payment_methods);
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 100, 10000);
+        recyclerView.findViewHolderForAdapterPosition(0).itemView.callOnClick();
+
+        verify(mActivity.braintreeFragment).sendAnalyticsEvent("vaulted-card.select");
+    }
+
+    @Test
     public void onPaymentMethodNoncesUpdated_showsVaultedPaymentMethods() {
         BraintreeUnitTestHttpClient httpClient = new BraintreeUnitTestHttpClient()
                 .configuration(new TestConfigurationBuilder().build())
@@ -521,6 +538,27 @@ public class DropInActivityUnitTest {
         assertThat(mActivity.findViewById(R.id.bt_vaulted_payment_methods)).isShown();
         assertEquals(2, ((RecyclerView) mActivity.findViewById(R.id.bt_vaulted_payment_methods)).getAdapter().getItemCount());
         assertThat((TextView) mActivity.findViewById(R.id.bt_supported_payment_methods_header)).hasText(R.string.bt_other);
+    }
+
+    @Test
+    public void onPaymentMethodNoncesUpdated_sendsAnalyticEvent()  {
+        setup(mock(BraintreeFragment.class));
+
+        List<PaymentMethodNonce> nonceList = new ArrayList<>();
+        nonceList.add(mock(CardNonce.class));
+
+        mActivity.onPaymentMethodNoncesUpdated(nonceList);
+
+        verify(mActivity.braintreeFragment).sendAnalyticsEvent("vaulted-card.appear");
+    }
+
+    @Test
+    public void onVaultedPaymentMethodsSelected_sendsAnalyticEvent() {
+        setup(mock(BraintreeFragment.class));
+
+        mActivity.onVaultEditButtonClick(null);
+
+        verify(mActivity.mBraintreeFragment).sendAnalyticsEvent("manager.appeared");
     }
 
     @Test
