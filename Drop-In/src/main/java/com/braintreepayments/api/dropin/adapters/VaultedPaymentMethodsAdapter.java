@@ -25,7 +25,8 @@ public class VaultedPaymentMethodsAdapter extends RecyclerView.Adapter<VaultedPa
     private BraintreeFragment mBraintreeFragment;
 
     public VaultedPaymentMethodsAdapter(PaymentMethodNonceCreatedListener listener,
-                                        List<PaymentMethodNonce> paymentMethodNonces, BraintreeFragment braintreeFragment) {
+                                        List<PaymentMethodNonce> paymentMethodNonces,
+                                        BraintreeFragment braintreeFragment) {
         mSelectedListener = listener;
         mPaymentMethodNonces = paymentMethodNonces;
         mBraintreeFragment = braintreeFragment;
