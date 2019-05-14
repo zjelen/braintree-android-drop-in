@@ -541,11 +541,13 @@ public class DropInActivityUnitTest {
     }
 
     @Test
-    public void onPaymentMethodNoncesUpdated_sendsAnalyticEvent()  {
+    public void onPaymentMethodNoncesUpdated_withACard_sendsAnalyticEvent() throws JSONException {
         setup(mock(BraintreeFragment.class));
 
         List<PaymentMethodNonce> nonceList = new ArrayList<>();
-        nonceList.add(mock(CardNonce.class));
+
+        nonceList.add(CardNonce.fromJson(
+                stringFromFixture("responses/visa_credit_card_response.json")));
 
         mActivity.onPaymentMethodNoncesUpdated(nonceList);
 
@@ -840,13 +842,13 @@ public class DropInActivityUnitTest {
 
     @Test
     public void vaultEditButton_whenVaultManagerEnabled_isVisible() {
-        setup(mock(BraintreeFragment.class));
-
         List<PaymentMethodNonce> nonceList = new ArrayList<>();
         nonceList.add(mock(CardNonce.class));
 
         mActivity.setDropInRequest(new DropInRequest()
                .vaultManager(true));
+
+        mActivityController.setup();
 
         mActivity.onPaymentMethodNoncesUpdated(nonceList);
 
@@ -855,12 +857,12 @@ public class DropInActivityUnitTest {
 
     @Test
     public void vaultEditButton_whenVaultManagerUnspecified_isInvisible() {
-        setup(mock(BraintreeFragment.class));
-
         List<PaymentMethodNonce> nonceList = new ArrayList<>();
         nonceList.add(mock(CardNonce.class));
 
         mActivity.setDropInRequest(new DropInRequest());
+
+        mActivityController.setup();
 
         mActivity.onPaymentMethodNoncesUpdated(nonceList);
 
@@ -869,13 +871,13 @@ public class DropInActivityUnitTest {
 
     @Test
     public void vaultEditButton_whenVaultManagerDisabled_isInvisible() {
-        setup(mock(BraintreeFragment.class));
-
         List<PaymentMethodNonce> nonceList = new ArrayList<>();
         nonceList.add(mock(CardNonce.class));
 
         mActivity.setDropInRequest(new DropInRequest()
                 .vaultManager(false));
+
+        mActivityController.setup();
 
         mActivity.onPaymentMethodNoncesUpdated(nonceList);
 
