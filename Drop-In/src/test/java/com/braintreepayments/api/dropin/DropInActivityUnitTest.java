@@ -63,6 +63,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -552,6 +553,17 @@ public class DropInActivityUnitTest {
         mActivity.onPaymentMethodNoncesUpdated(nonceList);
 
         verify(mActivity.braintreeFragment).sendAnalyticsEvent("vaulted-card.appear");
+    }
+
+    @Test
+    public void onPaymentMethodNoncesUpdated_withNoCards_doesNotSendAnalyticEvent() throws JSONException {
+        setup(mock(BraintreeFragment.class));
+
+        List<PaymentMethodNonce> nonceList = new ArrayList<>();
+
+        mActivity.onPaymentMethodNoncesUpdated(nonceList);
+
+        verify(mActivity.braintreeFragment, never()).sendAnalyticsEvent("vaulted-card.appear");
     }
 
     @Test
