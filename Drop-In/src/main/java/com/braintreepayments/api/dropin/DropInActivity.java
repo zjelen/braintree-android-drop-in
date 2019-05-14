@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.braintreepayments.api.Card;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.GooglePayment;
 import com.braintreepayments.api.PayPal;
@@ -200,7 +201,9 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onPaymentMethodNonceCreated(final PaymentMethodNonce paymentMethodNonce) {
-        mBraintreeFragment.sendAnalyticsEvent("vaulted-card.select");
+        if (paymentMethodNonce instanceof CardNonce) {
+            mBraintreeFragment.sendAnalyticsEvent("vaulted-card.select");
+        }
 
         if (!mRequestedThreeDSecure && paymentMethodNonce instanceof CardNonce &&
                 shouldRequestThreeDSecureVerification()) {
@@ -284,7 +287,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
             }
 
             for (PaymentMethodNonce nonce : paymentMethodNonces) {
-                if (nonce.getClass() == CardNonce.class) {
+                if (nonce instanceof CardNonce) {
                     mBraintreeFragment.sendAnalyticsEvent("vaulted-card.appear");
                     break;
                 }
