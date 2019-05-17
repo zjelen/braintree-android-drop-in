@@ -498,19 +498,21 @@ public class DropInActivityUnitTest {
 
     @Test
     public void selectingAVaultedPaymentMethod_sendsAnalyticEvent() {
-        BraintreeUnitTestHttpClient httpClient = new BraintreeUnitTestHttpClient()
-                .configuration(new TestConfigurationBuilder().build())
-                .successResponse(BraintreeUnitTestHttpClient.GET_PAYMENT_METHODS,
-                        stringFromFixture("responses/get_payment_methods_response.json"));
-        mActivity.setDropInRequest(new DropInRequest().clientToken(stringFromFixture("client_token.json")));
-        setup(httpClient);
+        CardNonce cardNonce = mock(CardNonce.class);
+        ArrayList<PaymentMethodNonce> nonces = new ArrayList<>();
+        nonces.add(cardNonce);
 
+        BraintreeFragment fragment = mock(BraintreeFragment.class);
+
+        setup(fragment);
+
+        mActivity.onPaymentMethodNoncesUpdated(nonces);
         RecyclerView recyclerView = mActivity.findViewById(R.id.bt_vaulted_payment_methods);
         recyclerView.measure(0, 0);
         recyclerView.layout(0, 0, 100, 10000);
         recyclerView.findViewHolderForAdapterPosition(0).itemView.callOnClick();
 
-        verify(mActivity.braintreeFragment).sendAnalyticsEvent("vaulted-card.select");
+        verify(fragment).sendAnalyticsEvent("vaulted-card.select");
     }
 
     @Test
