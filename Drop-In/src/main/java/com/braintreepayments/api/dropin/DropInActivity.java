@@ -201,10 +201,6 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onPaymentMethodNonceCreated(final PaymentMethodNonce paymentMethodNonce) {
-        if (paymentMethodNonce instanceof CardNonce) {
-            mBraintreeFragment.sendAnalyticsEvent("vaulted-card.select");
-        }
-
         if (!mRequestedThreeDSecure && paymentMethodNonce instanceof CardNonce &&
                 shouldRequestThreeDSecureVerification()) {
             mRequestedThreeDSecure = true;
@@ -279,8 +275,16 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         if (paymentMethodNonces.size() > 0) {
             mSupportedPaymentMethodsHeader.setText(R.string.bt_other);
             mVaultedPaymentMethodsContainer.setVisibility(View.VISIBLE);
-            mVaultedPaymentMethodsView.setAdapter(new VaultedPaymentMethodsAdapter(this,
-                    paymentMethodNonces));
+            mVaultedPaymentMethodsView.setAdapter(new VaultedPaymentMethodsAdapter(new PaymentMethodNonceCreatedListener() {
+                @Override
+                public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                    if (paymentMethodNonce instanceof CardNonce) {
+                        mBraintreeFragment.sendAnalyticsEvent("vaulted-card.select");
+                    }
+
+                    DropInActivity.this.onPaymentMethodNonceCreated(paymentMethodNonce);
+                }
+            }, paymentMethodNonces));
 
             if (mDropInRequest.isVaultManagerEnabled()) {
                 mVaultManagerButton.setVisibility(View.VISIBLE);

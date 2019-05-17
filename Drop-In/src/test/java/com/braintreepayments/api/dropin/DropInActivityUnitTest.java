@@ -497,13 +497,13 @@ public class DropInActivityUnitTest {
     }
 
     @Test
-    public void selectingAVaultedPaymentMethod_sendsAnalyticEvent() throws JSONException {
-        setup(mock(BraintreeFragment.class));
-
-        List<PaymentMethodNonce> nonceList = new ArrayList<>();
-        nonceList.add(mock(CardNonce.class));
-
-        mActivity.onPaymentMethodNoncesUpdated(nonceList);
+    public void selectingAVaultedPaymentMethod_sendsAnalyticEvent() {
+        BraintreeUnitTestHttpClient httpClient = new BraintreeUnitTestHttpClient()
+                .configuration(new TestConfigurationBuilder().build())
+                .successResponse(BraintreeUnitTestHttpClient.GET_PAYMENT_METHODS,
+                        stringFromFixture("responses/get_payment_methods_response.json"));
+        mActivity.setDropInRequest(new DropInRequest().clientToken(stringFromFixture("client_token.json")));
+        setup(httpClient);
 
         RecyclerView recyclerView = mActivity.findViewById(R.id.bt_vaulted_payment_methods);
         recyclerView.measure(0, 0);
