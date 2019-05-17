@@ -567,6 +567,22 @@ public class DropInActivityUnitTest {
     }
 
     @Test
+    public void onPaymentMethodNoncesUpdated_withPayPal_doesNotSendCardAnalyticEvent() throws JSONException {
+        setup(mock(BraintreeFragment.class));
+
+        PayPalAccountNonce paypalNonce = mock(PayPalAccountNonce.class);
+        when(paypalNonce.getDescription()).thenReturn("paypal-nonce");
+
+        ArrayList<Parcelable> paymentMethodNonces = new ArrayList<Parcelable>();
+        paymentMethodNonces.add(paypalNonce);
+
+        mActivity.onActivityResult(2, RESULT_OK, new Intent()
+                .putExtra("com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCES", paymentMethodNonces));
+
+        verify(mActivity.braintreeFragment, never()).sendAnalyticsEvent("vaulted-card.appear");
+    }
+
+    @Test
     public void onVaultedPaymentMethodsSelected_sendsAnalyticEvent() {
         setup(mock(BraintreeFragment.class));
 
@@ -649,6 +665,22 @@ public class DropInActivityUnitTest {
                 .getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
         assertEquals(result.getPaymentMethodType(), response.getPaymentMethodType());
         assertEquals(result.getPaymentMethodNonce(), response.getPaymentMethodNonce());
+    }
+
+
+    @Test
+    public void onActivityResult_nonceFromAddCardActivity_doesNotSendVaultAnalyticEvent() throws JSONException {
+        setup(mock(BraintreeFragment.class));
+
+        DropInResult result = new DropInResult()
+                .paymentMethodNonce(CardNonce.fromJson(
+                        stringFromFixture("responses/visa_credit_card_response.json")));
+        Intent data = new Intent()
+                .putExtra(DropInResult.EXTRA_DROP_IN_RESULT, result);
+
+        mActivity.onActivityResult(1, RESULT_OK, data);
+
+        verify(mActivity.braintreeFragment, never()).sendAnalyticsEvent("vaulted-card.appear");
     }
 
     @Test
