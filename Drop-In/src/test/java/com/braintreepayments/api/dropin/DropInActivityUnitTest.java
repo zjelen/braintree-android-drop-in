@@ -664,7 +664,7 @@ public class DropInActivityUnitTest {
     }
 
     @Test
-    public void onActivityResult_withPayPal_doesNotSendCardAnalyticEvent() throws JSONException {
+    public void onActivityResult_withPayPal_doesNotSendCardAnalyticEvent() {
         setup(mock(BraintreeFragment.class));
 
         PayPalAccountNonce paypalNonce = mock(PayPalAccountNonce.class);
