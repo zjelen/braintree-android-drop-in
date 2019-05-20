@@ -497,10 +497,10 @@ public class DropInActivityUnitTest {
     }
 
     @Test
-    public void selectingAVaultedCard_sendsAnalyticEvent() {
-        CardNonce cardNonce = mock(CardNonce.class);
+    public void clickingVaultedPaymentMethod_whenCard_sendsAnalyticEvent() {
+        PaymentMethodNonce nonce = mock(CardNonce.class);
         ArrayList<PaymentMethodNonce> nonces = new ArrayList<>();
-        nonces.add(cardNonce);
+        nonces.add(nonce);
 
         BraintreeFragment fragment = mock(BraintreeFragment.class);
 
@@ -513,6 +513,25 @@ public class DropInActivityUnitTest {
         recyclerView.findViewHolderForAdapterPosition(0).itemView.callOnClick();
 
         verify(fragment).sendAnalyticsEvent("vaulted-card.select");
+    }
+
+    @Test
+    public void clickingVaultedPaymentMethod_whenPayPal_doesNotSendAnalyticEvent() {
+        PaymentMethodNonce nonce = mock(PayPalAccountNonce.class);
+        ArrayList<PaymentMethodNonce> nonces = new ArrayList<>();
+        nonces.add(nonce);
+
+        BraintreeFragment fragment = mock(BraintreeFragment.class);
+
+        setup(fragment);
+
+        mActivity.onPaymentMethodNoncesUpdated(nonces);
+        RecyclerView recyclerView = mActivity.findViewById(R.id.bt_vaulted_payment_methods);
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 100, 10000);
+        recyclerView.findViewHolderForAdapterPosition(0).itemView.callOnClick();
+
+        verify(fragment, never()).sendAnalyticsEvent("vaulted-card.select");
     }
 
     @Test
