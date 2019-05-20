@@ -497,7 +497,7 @@ public class DropInActivityUnitTest {
     }
 
     @Test
-    public void selectingAVaultedPaymentMethod_sendsAnalyticEvent() {
+    public void selectingAVaultedCard_sendsAnalyticEvent() {
         CardNonce cardNonce = mock(CardNonce.class);
         ArrayList<PaymentMethodNonce> nonces = new ArrayList<>();
         nonces.add(cardNonce);
@@ -564,22 +564,6 @@ public class DropInActivityUnitTest {
         List<PaymentMethodNonce> nonceList = new ArrayList<>();
 
         mActivity.onPaymentMethodNoncesUpdated(nonceList);
-
-        verify(mActivity.braintreeFragment, never()).sendAnalyticsEvent("vaulted-card.appear");
-    }
-
-    @Test
-    public void onPaymentMethodNoncesUpdated_withPayPal_doesNotSendCardAnalyticEvent() throws JSONException {
-        setup(mock(BraintreeFragment.class));
-
-        PayPalAccountNonce paypalNonce = mock(PayPalAccountNonce.class);
-        when(paypalNonce.getDescription()).thenReturn("paypal-nonce");
-
-        ArrayList<Parcelable> paymentMethodNonces = new ArrayList<Parcelable>();
-        paymentMethodNonces.add(paypalNonce);
-
-        mActivity.onActivityResult(2, RESULT_OK, new Intent()
-                .putExtra("com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCES", paymentMethodNonces));
 
         verify(mActivity.braintreeFragment, never()).sendAnalyticsEvent("vaulted-card.appear");
     }
@@ -669,6 +653,21 @@ public class DropInActivityUnitTest {
         assertEquals(result.getPaymentMethodNonce(), response.getPaymentMethodNonce());
     }
 
+    @Test
+    public void onActivityResult_withPayPal_doesNotSendCardAnalyticEvent() throws JSONException {
+        setup(mock(BraintreeFragment.class));
+
+        PayPalAccountNonce paypalNonce = mock(PayPalAccountNonce.class);
+        when(paypalNonce.getDescription()).thenReturn("paypal-nonce");
+
+        ArrayList<Parcelable> paymentMethodNonces = new ArrayList<Parcelable>();
+        paymentMethodNonces.add(paypalNonce);
+
+        mActivity.onActivityResult(2, RESULT_OK, new Intent()
+                .putExtra("com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCES", paymentMethodNonces));
+
+        verify(mActivity.braintreeFragment, never()).sendAnalyticsEvent("vaulted-card.appear");
+    }
 
     @Test
     public void onActivityResult_nonceFromAddCardActivity_doesNotSendVaultAnalyticEvent() throws JSONException {
