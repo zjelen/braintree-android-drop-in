@@ -588,15 +588,6 @@ public class DropInActivityUnitTest {
     }
 
     @Test
-    public void onVaultedPaymentMethodsSelected_sendsAnalyticEvent() {
-        setup(mock(BraintreeFragment.class));
-
-        mActivity.onVaultEditButtonClick(null);
-
-        verify(mActivity.mBraintreeFragment).sendAnalyticsEvent("manager.appeared");
-    }
-
-    @Test
     public void onPaymentMethodNoncesUpdated_showsNothingIfNoVaultedPaymentMethods() {
         BraintreeUnitTestHttpClient httpClient = new BraintreeUnitTestHttpClient()
                 .configuration(new TestConfigurationBuilder().build())
